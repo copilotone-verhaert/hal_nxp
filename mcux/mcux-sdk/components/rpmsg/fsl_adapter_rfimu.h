@@ -23,7 +23,7 @@
 
 #ifndef IMU_TASK_PRIORITY
 #if defined(__ZEPHYR__)
-#define IMU_TASK_PRIORITY (3U)
+#define IMU_TASK_PRIORITY (-14)
 #elif defined(CPU2)
 #define IMU_TASK_PRIORITY (2U)
 #else
