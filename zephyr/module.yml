@@ -40,29 +40,29 @@ blobs:
 
 #For RW61x
   - path: rw61x/rw61x_sb_ble_15d4_combo_a2.bin
-    sha256: 09ab442650b200315ef59149df3ce1767a864e8889b76bbd25c7dfcebb6ecb99
+    sha256: 38ae3cfbed2945987a8db3989c1f96345bb79a2d7675c13e19737704bb4c8384
     type: img
     version: '1.0'
     license-path: zephyr/blobs/license/LA_OPT_NXP_Software_License.txt
-    url: https://github.com/NXP/wifi_nb_fw/raw/nxp-v4.2.2/rw61x/rw61x_sb_ble_15d4_combo_a2.bin
+    url: https://github.com/NXP/wifi_nb_fw/raw/nxp-v4.3.1/rw61x/rw61x_sb_ble_15d4_combo_a2.bin
     description: "BLE and 15.4 combo firmware for RW612 A2 boards"
-    doc-url: https://github.com/NXP/wifi_nb_fw/blob/nxp-v4.2.2/readme.txt
+    doc-url: https://github.com/NXP/wifi_nb_fw/blob/nxp-v4.3.1/readme.txt
   - path: rw61x/rw61x_sb_ble_a2.bin
-    sha256: 01e5bd31c8b4658b76356200e2a6410050d7a60a0e3cc2fc8057bf52f6253a73
+    sha256: b1d319fc4cc8fb31e1b23c38da0e1c0ae1a53d1b5a884f95d398bddd1848f83d
     type: img
     version: '1.0'
     license-path: zephyr/blobs/license/LA_OPT_NXP_Software_License.txt
-    url: https://github.com/NXP/wifi_nb_fw/raw/nxp-v4.2.2/rw61x/rw61x_sb_ble_a2.bin
+    url: https://github.com/NXP/wifi_nb_fw/raw/nxp-v4.3.1/rw61x/rw61x_sb_ble_a2.bin
     description: "BLE firmware for RW612 A2 boards"
-    doc-url: https://github.com/NXP/wifi_nb_fw/blob/nxp-v4.2.2/readme.txt
+    doc-url: https://github.com/NXP/wifi_nb_fw/blob/nxp-v4.3.1/readme.txt
   - path: rw61x/rw61x_sb_wifi_a2.bin
-    sha256: 843cd176ec1a46b332939b0cf58f4c34cf9750cc09f30d945c0d1d55e3335e38
+    sha256: 605ae8e09efeb30ea0b4c5691fd70b5a3807cbe52635847f2b9ec4135d651ad2
     type: img
     version: '1.0'
     license-path: zephyr/blobs/license/LA_OPT_NXP_Software_License.txt
-    url: https://github.com/NXP/wifi_nb_fw/raw/nxp-v4.2.2/rw61x/rw61x_sb_wifi_a2.bin
+    url: https://github.com/NXP/wifi_nb_fw/raw/nxp-v4.3.1/rw61x/rw61x_sb_wifi_a2.bin
     description: "WiFi firmware for RW612 A2 boards"
-    doc-url: https://github.com/NXP/wifi_nb_fw/blob/nxp-v4.2.2/readme.txt
+    doc-url: https://github.com/NXP/wifi_nb_fw/blob/nxp-v4.3.1/readme.txt
 
 #For MCXW23
   - path: mcxw23/libble_ll_os.a
