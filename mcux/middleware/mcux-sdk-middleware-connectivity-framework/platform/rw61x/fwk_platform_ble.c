@@ -11,10 +11,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#ifndef CONFIG_PRINTK /* Zephyr already has print support */
-#include "fsl_debug_console.h"
-#endif                /* CONFIG_PRINTK */
-
 #include "fsl_loader.h"
 #include "fsl_power.h"
 #include "fsl_adapter_imu.h"
@@ -87,6 +83,8 @@
 
 #ifndef PRINTF
 #define PRINTF printk
+#else
+#define PRINTF(...)
 #endif
 
 #endif /* CONFIG_PRINTK */
