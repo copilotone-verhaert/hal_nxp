@@ -1419,7 +1419,20 @@ status_t load_service(LOAD_Target_Type loadTarget, uint32_t sourceAddr)
         else
         {
             pt_a_ptr = (fsl_nboot_sb3_header_t *)sourceAddr;
-            pt_b_ptr = (fsl_nboot_sb3_header_t *)(sourceAddr + WIFI_IMAGE_SIZE_MAX);
+            /* Verhaert local patch: there is no image B when the caller hands
+             * us the firmware by pointer (the monolithic case, where the blob
+             * is a C array linked into the application). The original
+             *
+             *     pt_b_ptr = sourceAddr + WIFI_IMAGE_SIZE_MAX;
+             *
+             * synthesises a second slot at a fixed offset and dereferences it
+             * unconditionally below. On this design that address lands past
+             * the end of the application image but still inside IPED region 1,
+             * so the read has no valid GCM tag: the engine returns 0xDEADBEEF,
+             * raises ITRC IN12 and resets the chip. Harmless junk on a plain
+             * XIP part, fatal with IPED. Reported upstream to NXP.
+             */
+            pt_b_ptr = NULL;
         }
     }
     else if (LOAD_BLE_FIRMWARE == loadTarget)
@@ -1432,7 +1445,20 @@ status_t load_service(LOAD_Target_Type loadTarget, uint32_t sourceAddr)
         else
         {
             pt_a_ptr = (fsl_nboot_sb3_header_t *)sourceAddr;
-            pt_b_ptr = (fsl_nboot_sb3_header_t *)(sourceAddr + BLE_IMAGE_SIZE_MAX);
+            /* Verhaert local patch: there is no image B when the caller hands
+             * us the firmware by pointer (the monolithic case, where the blob
+             * is a C array linked into the application). The original
+             *
+             *     pt_b_ptr = sourceAddr + BLE_IMAGE_SIZE_MAX;
+             *
+             * synthesises a second slot at a fixed offset and dereferences it
+             * unconditionally below. On this design that address lands past
+             * the end of the application image but still inside IPED region 1,
+             * so the read has no valid GCM tag: the engine returns 0xDEADBEEF,
+             * raises ITRC IN12 and resets the chip. Harmless junk on a plain
+             * XIP part, fatal with IPED. Reported upstream to NXP.
+             */
+            pt_b_ptr = NULL;
         }
     }
     else if (LOAD_15D4_FIRMWARE == loadTarget)
@@ -1445,7 +1471,20 @@ status_t load_service(LOAD_Target_Type loadTarget, uint32_t sourceAddr)
         else
         {
             pt_a_ptr = (fsl_nboot_sb3_header_t *)sourceAddr;
-            pt_b_ptr = (fsl_nboot_sb3_header_t *)(sourceAddr + Z154_IMAGE_SIZE_MAX);
+            /* Verhaert local patch: there is no image B when the caller hands
+             * us the firmware by pointer (the monolithic case, where the blob
+             * is a C array linked into the application). The original
+             *
+             *     pt_b_ptr = sourceAddr + Z154_IMAGE_SIZE_MAX;
+             *
+             * synthesises a second slot at a fixed offset and dereferences it
+             * unconditionally below. On this design that address lands past
+             * the end of the application image but still inside IPED region 1,
+             * so the read has no valid GCM tag: the engine returns 0xDEADBEEF,
+             * raises ITRC IN12 and resets the chip. Harmless junk on a plain
+             * XIP part, fatal with IPED. Reported upstream to NXP.
+             */
+            pt_b_ptr = NULL;
         }
     }
 #ifdef CONFIG_FW_VDLLV2
@@ -1474,7 +1513,7 @@ status_t load_service(LOAD_Target_Type loadTarget, uint32_t sourceAddr)
         }
 
         header = (void *)pt_b_ptr;
-        if (header->ih_magic == IMAGE_MAGIC)
+        if ((pt_b_ptr != NULL) && (header->ih_magic == IMAGE_MAGIC))
         {
             pt_b_ptr = (void *)(((uint8_t *)pt_b_ptr) + header->ih_hdr_size);
         }
@@ -1504,12 +1543,12 @@ status_t load_service(LOAD_Target_Type loadTarget, uint32_t sourceAddr)
     }
 
     /* Check partition TAG and select active partition */
-    if ((pt_a_ptr->magic != TAG_SB_V3) && (pt_b_ptr->magic != TAG_SB_V3))
+    if ((pt_a_ptr->magic != TAG_SB_V3) && ((pt_b_ptr == NULL) || (pt_b_ptr->magic != TAG_SB_V3)))
     {
         active_pt_ptr = pt_a_ptr;
         status        = loader_process_raw_file((uint32_t)active_pt_ptr);
     }
-    else if ((pt_a_ptr->magic == TAG_SB_V3) && (pt_b_ptr->magic != TAG_SB_V3))
+    else if ((pt_a_ptr->magic == TAG_SB_V3) && ((pt_b_ptr == NULL) || (pt_b_ptr->magic != TAG_SB_V3)))
     {
         active_pt_ptr = pt_a_ptr;
 #ifdef CONFIG_FW_VDLLV2
@@ -1525,7 +1564,7 @@ status_t load_service(LOAD_Target_Type loadTarget, uint32_t sourceAddr)
 #endif
         status = loader_process_sb_file((uint32_t)active_pt_ptr);
     }
-    else if ((pt_a_ptr->magic != TAG_SB_V3) && (pt_b_ptr->magic == TAG_SB_V3))
+    else if ((pt_a_ptr->magic != TAG_SB_V3) && (pt_b_ptr != NULL) && (pt_b_ptr->magic == TAG_SB_V3))
     {
         active_pt_ptr = pt_b_ptr;
         if (active_pt_ptr->firmwareVersion < firmwareVersion)
@@ -1536,7 +1575,7 @@ status_t load_service(LOAD_Target_Type loadTarget, uint32_t sourceAddr)
     }
     else
     {
-        if (pt_a_ptr->firmwareVersion >= pt_b_ptr->firmwareVersion)
+        if ((pt_b_ptr == NULL) || (pt_a_ptr->firmwareVersion >= pt_b_ptr->firmwareVersion))
         {
             active_pt_ptr = pt_a_ptr;
         }
